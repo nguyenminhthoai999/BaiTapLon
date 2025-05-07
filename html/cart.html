@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giỏ Hàng - Bán Rau Xanh</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <div class="container">
+            <a class="navbar-brand text-white d-flex align-items-center" href="index.html">
+                <img src="../img/Logo.png" alt="Logo Rau Xanh" width="40" height="40" class="me-2" /> Rau Xanh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon bg-light"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="product-list.html">Sản Phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="cart.html">Giỏ Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="about.html">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="sitemap.html">Sơ Đồ Site</a></li>
+                </ul>
+                <form id="search-form" class="d-flex me-3" action="#" method="GET">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Tìm kiếm rau..." aria-label="Tìm kiếm" />
+                    <button class="btn btn-light" type="submit">Tìm</button>
+                </form>
+                <a href="register.html" class="btn btn-light me-2 text-dark text-decoration-none">Đăng Ký</a>
+                <a href="login.html" class="btn btn-light text-dark text-decoration-none">Đăng Nhập</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Giỏ hàng -->
+    <main class="container my-5">
+        <h1 class="text-center text-success mb-4">Giỏ Hàng Của Bạn</h1>
+
+        <div class="table-responsive mb-3">
+            <table class="table table-striped" id="cartTable">
+                <thead class="table-success">
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Sản Phẩm</th>
+                        <th>Đơn Giá</th>
+                        <th>Số Lượng</th>
+                        <th>Thành Tiền</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dòng sản phẩm sẽ được chèn bởi script.js -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center mb-4">
+            <h4 class="me-3">Tổng cộng:</h4>
+            <h4 id="cartTotal" class="text-success">0₫</h4>
+        </div>
+
+        <div class="text-end">
+            <button id="checkout-btn" class="btn btn-success btn-lg">Tiến Hành Thanh Toán</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-success text-white text-center py-3 mt-5">
+        <div class="container">
+            &copy; 2025 Website Bán Rau Xanh - Tất cả quyền được bảo vệ
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // Lấy giỏ hàng từ localStorage
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            // Nếu giỏ hàng trống, hiển thị thông báo
+            if (cart.length === 0) {
+                $('#cartTable tbody').append('<tr><td colspan="6" class="text-center">Giỏ hàng của bạn hiện tại trống!</td></tr>');
+                $('#cartTotal').text('0₫');
+            } else {
+                // Hiển thị các sản phẩm trong giỏ hàng
+                cart.forEach(item => {
+                    $('#cartTable tbody').append(`
+                        <tr data-id="${item.id}">
+                            <td><img src="${item.image}" alt="${item.name}" width="50" height="50" /></td>
+                            <td>${item.name}</td>
+                            <td>${item.price}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger decrease-qty" data-id="${item.id}">-</button>
+                                ${item.quantity}
+                                <button class="btn btn-sm btn-outline-success increase-qty" data-id="${item.id}">+</button>
+                            </td>
+                            <td>${(parseInt(item.price.replace('₫', '').replace(',', '')) * item.quantity).toLocaleString()}₫</td>
+                            <td><button class="btn btn-sm btn-outline-danger remove-item" data-id="${item.id}">Xóa</button></td>
+                        </tr>
+                    `);
+                });
+
+                // Tính tổng giỏ hàng
+                updateCartTotal();
+
+                // Sự kiện thay đổi số lượng sản phẩm
+                $(document).on('click', '.increase-qty', function() {
+                    const id = $(this).data('id');
+                    updateQuantity(id, 1);
+                });
+
+                $(document).on('click', '.decrease-qty', function() {
+                    const id = $(this).data('id');
+                    updateQuantity(id, -1);
+                });
+
+                // Sự kiện xóa sản phẩm
+                $(document).on('click', '.remove-item', function() {
+                    const idToRemove = $(this).data('id');
+                    removeItemFromCart(idToRemove);
+                });
+
+                // Cập nhật lại giỏ hàng và tính tổng
+                function updateQuantity(id, delta) {
+                    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    const item = cart.find(p => p.id === id);
+                    if (item) {
+                        item.quantity += delta;
+                        if (item.quantity <= 0) item.quantity = 1; // Số lượng tối thiểu là 1
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        location.reload(); // Tải lại trang để cập nhật giỏ hàng
+                    }
+                }
+
+                // Cập nhật tổng tiền giỏ hàng
+                function updateCartTotal() {
+                    let total = 0;
+                    cart.forEach(item => {
+                        total += parseInt(item.price.replace('₫', '').replace(',', '')) * item.quantity;
+                    });
+                    $('#cartTotal').text(total.toLocaleString() + '₫');
+                }
+
+                // Thanh toán
+                $('#checkout-btn').click(function() {
+                    if (cart.length > 0) {
+                        alert('Tiến hành thanh toán');
+                        window.location.href = 'checkout.html'; // Chuyển đến trang thanh toán
+                    } else {
+                        alert('Giỏ hàng của bạn đang trống!');
+                    }
+                });
+            }
+        });
+
+        function removeItemFromCart(id) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const updatedCart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            location.reload(); // Tải lại trang để cập nhật giỏ hàng
+        }
+    </script>
+</body>
+
+</html>

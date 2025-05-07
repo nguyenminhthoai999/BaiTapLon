@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - Bán Rau Xanh</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/script.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <div class="container">
+            <a class="navbar-brand text-white d-flex align-items-center" href="index.html">
+                <img src="../img/Logo.png" alt="Logo Rau Xanh" width="40" height="40" class="me-2" /> Rau Xanh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon bg-light"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="product-list.html">Sản Phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="cart.html">Giỏ Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="about.html">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="sitemap.html">Sơ Đồ Site</a></li>
+                </ul>
+                <form id="search-form" class="d-flex me-3" action="#" method="GET">
+                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm rau..." aria-label="Tìm kiếm">
+                    <button class="btn btn-light" type="submit">Tìm</button>
+                </form>
+                <button class="btn btn-light me-2">
+                    <a href="register.html" class="text-decoration-none text-dark">Đăng Ký</a>
+                </button>
+                <button class="btn btn-light">
+                    <a href="login.html" class="text-decoration-none text-dark">Đăng Nhập</a>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <h1 class="text-center text-success mb-4">Thông Tin Thanh Toán</h1>
+
+        <div class="mb-4">
+            <h2 class="h5 mb-3">Giỏ hàng của bạn:</h2>
+            <ul id="checkout-cart-items" class="list-group">
+            </ul>
+            <p class="fw-bold mt-2">Tổng cộng: <span id="checkout-total-amount">0 VND</span></p>
+        </div>
+
+        <form id="checkout-form">
+            <div class="mb-3">
+                <label for="customerName" class="form-label">Họ và Tên:</label>
+                <input type="text" class="form-control" id="customerName" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="customerAddress" class="form-label">Địa Chỉ:</label>
+                <input type="text" class="form-control" id="customerAddress" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="customerPhone" class="form-label">Số Điện Thoại:</label>
+                <input type="tel" class="form-control" id="customerPhone" required pattern="[0-9]{10,11}" title="Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số)">
+            </div>
+
+            <div class="mb-3">
+                <label for="paymentMethod" class="form-label">Phương thức thanh toán:</label>
+                <select class="form-select" id="paymentMethod">
+                    <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a href="cart.html" class="btn btn-outline-secondary flex-grow-1 me-2">Quay lại Giỏ hàng</a>
+                <button type="submit" class="btn btn-success flex-grow-1 ms-2">Đặt Hàng</button>
+            </div>
+        </form>
+    </main>
+
+    <footer class="bg-success text-white text-center py-3 mt-5">
+        <div class="container">
+            &copy; 2025 Website Bán Rau Xanh - Tất cả quyền được bảo vệ
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            const getCart = () => JSON.parse(localStorage.getItem('cart')) || [];
+            const getProducts = () => JSON.parse(localStorage.getItem('products')) || [];
+
+            const displayCheckoutCart = () => {
+                const cartItems = getCart();
+                const products = getProducts();
+                const cartList = $('#checkout-cart-items');
+                const totalAmountElement = $('#checkout-total-amount');
+                let total = 0;
+
+                cartList.empty();
+
+                if (cartItems.length === 0) {
+                    cartList.append('<li class="list-group-item">Giỏ hàng trống.</li>');
+                } else {
+                    cartItems.forEach(item => {
+                        const product = products.find(p => p.id === item.productId);
+                        if (product) {
+                            const itemTotal = product.price * item.quantity;
+                            total += itemTotal;
+                            cartList.append(`
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    ${product.name} x ${item.quantity}
+                                    <span>${itemTotal.toLocaleString()} VND</span>
+                                </li>
+                            `);
+                        }
+                    });
+                }
+                totalAmountElement.text(total.toLocaleString() + ' VND');
+            };
+
+            displayCheckoutCart();
+
+            $('#checkout-form').on('submit', function(e) {
+                e.preventDefault();
+
+                const name = $('#customerName').val().trim();
+                const address = $('#customerAddress').val().trim();
+                const phone = $('#customerPhone').val().trim();
+                const payment = $('#paymentMethod').val();
+                const cart = getCart();
+                const products = getProducts();
+
+                if (name === "" || address === "" || phone === "") {
+                    alert("Vui lòng điền đầy đủ thông tin giao hàng!");
+                    return;
+                }
+
+                if (cart.length === 0) {
+                    alert("Giỏ hàng của bạn đang trống!");
+                    return;
+                }
+
+                const orderItems = cart.map(item => {
+                    const product = products.find(p => p.id === item.productId);
+                    return {
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: item.quantity,
+                        subtotal: product.price * item.quantity
+                    };
+                });
+
+                const total = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+                const order = {
+                    customerName: name,
+                    customerAddress: address,
+                    customerPhone: phone,
+                    paymentMethod: payment,
+                    items: orderItems,
+                    totalAmount: total,
+                    orderDate: new Date().toLocaleString()
+                };
+
+                localStorage.setItem('lastOrder', JSON.stringify(order));
+                localStorage.removeItem('cart');
+
+                alert("Đặt hàng thành công! Đang chuyển đến trang xác nhận...");
+                window.location.href = 'confirmation.html';
+            });
+        });
+    </script>
+</body>
+
+</html>

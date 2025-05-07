@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận Đặt Hàng</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/script.js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <div class="container">
+            <a class="navbar-brand text-white d-flex align-items-center" href="index.html">
+                <img src="../img/Logo.png" alt="Logo Rau Xanh" width="40" height="40" class="me-2" /> Rau Xanh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon bg-light"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="product-list.html">Sản Phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="cart.html">Giỏ Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="about.html">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="sitemap.html">Sơ Đồ Site</a></li>
+                </ul>
+                <form id="search-form" class="d-flex me-3" action="#" method="GET">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Tìm kiếm rau..." aria-label="Tìm kiếm" />
+                    <button class="btn btn-light" type="submit">Tìm</button>
+                </form>
+                <a href="register.html" class="btn btn-light me-2 text-dark text-decoration-none">Đăng Ký</a>
+                <a href="login.html" class="btn btn-light text-dark text-decoration-none">Đăng Nhập</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="container my-5">
+        <h2 class="text-center text-success mb-4" style="font-size: 2.5rem; color:aqua">Cảm ơn bạn đã đặt hàng!</h2>
+        <p class="text-center mb-4">Chúng tôi đã nhận được đơn hàng của bạn và sẽ xử lý trong thời gian sớm nhất.</p>
+
+        <div id="order-details" class="bg-light p-4 rounded shadow-sm"></div>
+        <div class="bg-light p-4 rounded shadow-sm mt-4">
+            <h4 class="text-success">Liên hệ hỗ trợ</h4>
+            <p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:</p>
+            <p><strong>Số điện thoại:</strong> <a href="tel:0123456789" class="text-decoration-none text-success">0123456789</a></p>
+            <p><strong>Email:</strong> <a href="mailto:CSKH@banrauxanh.com" class="text-decoration-none text-success">CSKH@banrauxanh.com</a></p>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-success" onclick="window.location.href='index.html'">Về Trang Chủ</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-success text-white text-center py-3">
+        <div class="container">
+            &copy; 2025 Website Bán Rau Xanh - Tất cả quyền được bảo vệ
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            const orderData = JSON.parse(localStorage.getItem('lastOrder'));
+            if (!orderData) {
+                $('#order-details').html('<p class="text-danger">Không tìm thấy thông tin đơn hàng.</p>');
+                return;
+            }
+
+            let orderHTML = `
+                <h4 class="text-success">Thông tin khách hàng</h4>
+                <p><strong>Họ tên:</strong> ${orderData.customerName}</p>
+                <p><strong>Địa chỉ:</strong> ${orderData.customerAddress}</p>
+                <p><strong>Số điện thoại:</strong> ${orderData.customerPhone}</p>
+                <p><strong>Phương thức thanh toán:</strong> ${orderData.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : orderData.paymentMethod}</p>
+                <p><strong>Thời gian đặt:</strong> ${orderData.orderDate}</p>
+                <hr>
+                <h4 class="text-success">Chi tiết đơn hàng</h4>
+                <ul class="list-group mb-3">`;
+
+            orderData.items.forEach(item => {
+                orderHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${item.name} x ${item.quantity}
+                        <span>${item.subtotal.toLocaleString()} VND</span>
+                    </li>`;
+            });
+
+            orderHTML += `</ul>
+                <p class="fw-bold text-end">Tổng tiền: ${orderData.totalAmount.toLocaleString()} VND</p>`;
+
+            $('#order-details').html(orderHTML);
+        });
+    </script>
+</body>
+
+</html>

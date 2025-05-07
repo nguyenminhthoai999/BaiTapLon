@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh Sách Sản Phẩm - Bán Rau Xanh</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <div class="container">
+            <a class="navbar-brand text-white d-flex align-items-center" href="index.html">
+                <img src="../img/Logo.png" alt="Logo Rau Xanh" width="40" height="40" class="me-2" /> Rau Xanh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon bg-light"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="product-list.html">Sản Phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="cart.html">Giỏ Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="about.html">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="sitemap.html">Sơ Đồ Site</a></li>
+                </ul>
+                <form id="search-form" class="d-flex me-3" action="#" method="GET">
+                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm rau..." aria-label="Tìm kiếm" />
+                    <button class="btn btn-light" type="submit">Tìm</button>
+                </form>
+                <!-- Nút Đăng Ký và Đăng Nhập -->
+                <button class="btn btn-light me-2">
+                    <a href="register.html" class="text-decoration-none text-dark">Đăng Ký</a>
+                </button>
+                <button class="btn btn-light">
+                    <a href="login.html" class="text-decoration-none text-dark">Đăng Nhập</a>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <h1 class="text-center mb-4" style="color: white; font-size: 3rem;">Danh Sách Các Sản Phẩm</h1>
+
+        <div class="row g-4" id="product-list">
+            <!-- Sản phẩm sẽ được thêm vào đây bằng JavaScript -->
+        </div>
+    </main>
+
+    <!-- Modal chi tiết sản phẩm -->
+    <div class="modal fade" id="productDetailModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi Tiết Sản Phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="productImage" class="img-fluid mb-3" alt="Product Image">
+                    <h5 id="productName"></h5>
+                    <p id="productPrice"></p>
+                    <p id="productDescription"></p>
+                    <button class="btn btn-success" id="modalAddToCart">Thêm vào giỏ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-success text-white text-center py-3 mt-5">
+        &copy; 2025 Website Bán Rau Xanh - Tất cả quyền được bảo vệ
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            const products = [{
+                id: "rau-bo-ngot",
+                name: "Rau Bồ Ngót",
+                price: "10,000 VND",
+                description: "Rau bồ ngót là loại rau lá xanh quen thuộc, vị ngọt thanh mát, thường dùng để nấu canh, rất tốt cho sức khỏe.",
+                image: "../img/rau bo ngot.png"
+            }, {
+                id: "rau-cai",
+                name: "Rau Cải",
+                price: "8,000 VND",
+                description: "Rau cải tươi, sạch. Rau cải là nhóm rau lá xanh đa dạng, có nhiều loại với hương vị và cách chế biến khác nhau, thường dùng trong các món xào, luộc hoặc nấu canh.",
+                image: "../img/rau cai.png"
+            }, {
+                id: "rau-day",
+                name: "Rau Đay",
+                price: "12,000 VND",
+                description: "Rau đay xanh mướt. Rau đay là loại rau có lá nhớt đặc trưng, thường được nấu canh với tôm hoặc cua, mang lại vị ngọt mát và cảm giác đặc biệt.",
+                image: "../img/rau day.png"
+            }, {
+                id: "rau-muong",
+                name: "Rau Muống",
+                price: "9,000 VND",
+                description: "Rau muống giòn, ngon. Rau muống là loại rau thân leo phổ biến, dễ trồng, có vị ngọt nhẹ và thường được xào hoặc luộc ăn hàng ngày.",
+                image: "../img/rau muong.png"
+            }, {
+                id: "rau-ngo-ri",
+                name: "Rau Ngò Ri",
+                price: "7,000 VND",
+                description: "Ngò rí thơm, dễ dùng. Rau ngò rí, hay còn gọi là rau mùi, là loại rau thơm có mùi đặc trưng, thường dùng để trang trí và tăng hương vị cho nhiều món ăn.",
+                image: "../img/rau ngo ri.png"
+            }, {
+                id: "tia-to",
+                name: "Rau Tía Tô",
+                price: "6,000 VND",
+                description: "Rau tía tô là loại rau thơm có lá màu tím đặc trưng, mùi thơm nồng ấm, thường dùng làm gia vị hoặc ăn kèm trong nhiều món ăn và rất có lợi cho sức khỏe.",
+                image: "../img/tia to.png"
+            }, {
+                id: "xa-lach",
+                name: "Rau Xà Lách",
+                price: "15,000 VND",
+                description: "Rau xà lách là loại rau lá xanh tươi mát, có vị ngọt nhẹ và giòn, thường dùng để ăn sống trong các món salad hoặc cuốn.",
+                image: "../img/xa lach.png"
+            }, {
+                id: "rau-ngo-gai",
+                name: "Rau Ngò Gai",
+                price: "8,500 VND",
+                description: "Rau ngò gai, hay còn gọi là mùi tàu, là loại rau thơm có lá dài răng cưa và mùi thơm đặc trưng, thường dùng để nêm vào các món canh, bún, phở.",
+                image: "../img/rau ngo gai.png"
+            }];
+
+            // Hiển thị các sản phẩm
+            products.forEach(product => {
+                $('#product-list').append(`
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="text-success">${product.price}</p>
+                                <button class="btn btn-outline-success mb-2 w-100 view-detail-btn" 
+                                    data-id="${product.id}" 
+                                    data-name="${product.name}" 
+                                    data-price="${product.price}" 
+                                    data-description="${product.description}" 
+                                    data-image="${product.image}">
+                                    Xem Chi Tiết
+                                </button>
+                                <button class="btn btn-success w-100 add-to-cart-btn" 
+                                    data-id="${product.id}" 
+                                    data-name="${product.name}" 
+                                    data-price="${product.price}" 
+                                    data-image="${product.image}">
+                                    Thêm Vào Giỏ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Xử lý thêm vào giỏ hàng
+            $(document).on('click', '.add-to-cart-btn', function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const price = $(this).data('price');
+                const image = $(this).data('image');
+                const description = $(this).data('description');
+
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const existing = cart.find(p => p.id === id);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    cart.push({
+                        id,
+                        name,
+                        price,
+                        image,
+                        description,
+                        quantity: 1
+                    });
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert(`Đã thêm ${name} vào giỏ hàng.`);
+            });
+
+            // Xử lý xem chi tiết sản phẩm
+            $(document).on('click', '.view-detail-btn', function() {
+                $('#productImage').attr('src', $(this).data('image'));
+                $('#productName').text($(this).data('name'));
+                $('#productPrice').text($(this).data('price'));
+                $('#productDescription').text($(this).data('description'));
+
+                $('#modalAddToCart').data({
+                    id: $(this).data('id'),
+                    name: $(this).data('name'),
+                    price: $(this).data('price'),
+                    image: $(this).data('image')
+                });
+
+                $('#productDetailModal').modal('show');
+            });
+
+            // Thêm vào giỏ từ Modal
+            $('#modalAddToCart').click(function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const price = $(this).data('price');
+                const image = $(this).data('image');
+
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const existing = cart.find(p => p.id === id);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    cart.push({
+                        id,
+                        name,
+                        price,
+                        image,
+                        quantity: 1
+                    });
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                $('#productDetailModal').modal('hide');
+                window.location.href = "cart.html";
+            });
+        });
+    </script>
+
+</body>
+
+</html>

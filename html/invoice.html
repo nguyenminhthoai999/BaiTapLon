@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hóa Đơn - Bán Rau Xanh</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/script.js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <div class="container">
+            <a class="navbar-brand text-white" href="index.html">
+                <img src="../img/Logo.png" alt="Logo Rau Xanh" width="40" height="40" class="me-2" /> Rau Xanh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon bg-light"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="product-list.html">Sản Phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="cart.html">Giỏ Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="checkout.html">Thanh Toán</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <h1 class="text-center text-success mb-4" style="font-size: 2.5rem; color: white;">Hóa Đơn Mua Hàng</h1>
+
+        <!-- Thông tin khách hàng -->
+        <div class="mb-4 border rounded p-3 bg-light" id="customerInfo">
+            <h5 class="text-success">Thông Tin Khách Hàng</h5>
+            <p><strong>Họ tên:</strong> <span id="cusName">...</span></p>
+            <p><strong>Email:</strong> <span id="cusEmail">...</span></p>
+            <p><strong>Điện thoại:</strong> <span id="cusPhone">...</span></p>
+            <p><strong>Địa chỉ:</strong> <span id="cusAddress">...</span></p>
+        </div>
+
+        <!-- Bảng hóa đơn -->
+        <div class="table-responsive">
+            <table class="table table-striped" id="invoice-table">
+                <thead class="table-success">
+                    <tr>
+                        <th>Sản Phẩm</th>
+                        <th>Số Lượng</th>
+                        <th>Đơn Giá</th>
+                        <th>Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dữ liệu sẽ được thêm bằng jQuery -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center">
+            <h4 class="me-3">Tổng Tiền:</h4>
+            <h4 id="invoiceTotal" class="text-success">0₫</h4>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-success text-white text-center py-3 mt-5">
+        <div class="container">
+            &copy; 2025 Website Bán Rau Xanh - Tất cả quyền được bảo vệ
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            const order = JSON.parse(localStorage.getItem("lastOrder"));
+
+            if (!order || !order.items || order.items.length === 0) {
+                $("#invoice-table tbody").html('<tr><td colspan="4" class="text-center text-danger">Không có dữ liệu hóa đơn.</td></tr>');
+                $("#customerInfo").hide();
+                return;
+            }
+
+            // Hiển thị thông tin khách hàng
+            $("#cusName").text(order.name || "Không có");
+            $("#cusEmail").text(order.email || "Không có");
+            $("#cusPhone").text(order.phone || "Không có");
+            $("#cusAddress").text(order.address || "Không có");
+
+            // Hiển thị danh sách sản phẩm
+            let total = 0;
+            order.items.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price.toLocaleString()}₫</td>
+                        <td>${item.subtotal.toLocaleString()}₫</td>
+                    </tr>`;
+                $("#invoice-table tbody").append(row);
+                total += item.subtotal;
+            });
+
+            $("#invoiceTotal").text(total.toLocaleString() + "₫");
+        });
+    </script>
+</body>
+
+</html>
